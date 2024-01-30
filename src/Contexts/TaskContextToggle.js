@@ -5,7 +5,7 @@ const TaskModelContext = createContext();
 
 export const TaskModalProvider = ({ children }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  
+
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };

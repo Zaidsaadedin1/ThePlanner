@@ -43,39 +43,61 @@ const IsCompleteContext = createContext<IsCompleteContextProps>({
   IsComplete: false,
   setIsCompleteValue: () => {},
 });
+const ResetFilterContext = createContext<{ resetFilters: () => void }>({
+  resetFilters: () => {},
+});
 
 interface Props {
   children: ReactNode;
 }
-
 export const FilterProvider = ({ children }: Props) => {
   const { setListOfTasksValues } = useListOfTasks();
 
   const filteredTasks = async (filteredTasks: FilteredTasks) => {
     try {
       const result = await apis.filterTask(filteredTasks);
-      console.log(result);
       setListOfTasksValues(result.data.assignments);
     } catch (error) {
       console.error("Error filtering tasks:", error);
     }
   };
 
-  const [MainHeader, setMainHeader] = useState<string | undefined>("All Tasks");
-  const [Name, setName] = useState<string | null>(null);
-  const [Priority, setPriority] = useState<number | null>(null);
-  const [IsComplete, setIsComplete] = useState<boolean>(false);
+  const initialMainHeader = "All Tasks";
+  const initialCategoryName = null;
+  const initialPriority = null;
+  const initialIsComplete = false;
+
+  const resetFilters = () => {
+    setMainHeader(initialMainHeader);
+    setCategoryName(initialCategoryName);
+    setPriority(initialPriority);
+    setIsComplete(initialIsComplete);
+    filteredTasks({
+      Priority: initialPriority,
+      Name: initialCategoryName,
+      IsComplete: initialIsComplete,
+    });
+  };
+
+  const [MainHeader, setMainHeader] = useState<string | undefined>(
+    initialMainHeader
+  );
+  const [CategoryName, setCategoryName] = useState<string | null>(
+    initialCategoryName
+  );
+  const [Priority, setPriority] = useState<number | null>(initialPriority);
+  const [IsComplete, setIsComplete] = useState<boolean>(initialIsComplete);
 
   const setMainHeaderValue = (newMainHeader: string) => {
     setMainHeader(newMainHeader);
   };
 
   const setNameValue = (newName: string) => {
-    setName(newName);
+    setCategoryName(newName);
     filteredTasks({ Priority, Name: newName, IsComplete });
   };
 
-  const setPriorityValue = (newPriority: number) => {
+  const setPriorityValue = (newPriority: number | null) => {
     setPriority(newPriority);
     if (newPriority === 1) {
       setMainHeader("High Priority Tasks");
@@ -84,28 +106,31 @@ export const FilterProvider = ({ children }: Props) => {
     } else {
       setMainHeader("Low Priority Tasks");
     }
-    filteredTasks({ Priority: newPriority, Name, IsComplete });
+    filteredTasks({ Priority: newPriority, Name: CategoryName, IsComplete });
   };
 
   const setIsCompleteValue = (newIsComplete: boolean) => {
-    setIsComplete(!newIsComplete);
-    filteredTasks({ Priority, Name, IsComplete: newIsComplete });
+    setIsComplete(newIsComplete);
+    filteredTasks({ Priority, Name: CategoryName, IsComplete: newIsComplete });
   };
 
   return (
-    <NameContext.Provider value={{ Name, setNameValue }}>
+    <NameContext.Provider value={{ Name: CategoryName, setNameValue }}>
       <PriorityContext.Provider value={{ Priority, setPriorityValue }}>
         <IsCompleteContext.Provider value={{ IsComplete, setIsCompleteValue }}>
           <MainHeaderTextContext.Provider
             value={{ MainHeader: MainHeader || "", setMainHeaderValue }}
           >
-            {children}
+            <ResetFilterContext.Provider value={{ resetFilters }}>
+              {children}
+            </ResetFilterContext.Provider>
           </MainHeaderTextContext.Provider>
         </IsCompleteContext.Provider>
       </PriorityContext.Provider>
     </NameContext.Provider>
   );
 };
+
 export const useMainHeader = () => {
   const context = useContext(
     MainHeaderTextContext
@@ -125,4 +150,8 @@ export const usePriority = () => {
 export const useIsComplete = () => {
   const context = useContext(IsCompleteContext) as IsCompleteContextProps;
   return context;
+};
+export const useResetFilters = () => {
+  const { resetFilters } = useContext(ResetFilterContext);
+  return resetFilters;
 };

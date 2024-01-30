@@ -1,4 +1,4 @@
-export interface TaskInterface {
+export interface TaskModel {
     id: number;
     name: string;
     description?: string | null;
@@ -16,11 +16,20 @@ export interface TaskInterface {
     High = 1,
   }
   
-  export interface Task {
+  export interface AddTask {
     name: string;
     description: string;
     priority: number;
     createdAt: string;
+    startDate?: string | undefined;
+    dueDate?: string | undefined;
+    isCompleted: boolean;
+    categoryId: number;
+  }
+  export interface UpdateTask {
+    name: string;
+    description: string;
+    priority: number;
     startDate?: string | undefined;
     dueDate?: string | undefined;
     isCompleted: boolean;
@@ -31,4 +40,8 @@ export interface TaskInterface {
     Priority: number | null;
     Name: string | null;
     IsComplete: boolean | null;
+  }
+
+  export interface TaskSearchValue{
+    Value: string | null;
   }

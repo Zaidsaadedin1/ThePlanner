@@ -1,36 +1,16 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Category from "./Category/Category";
-import { apis } from "@/Apis";
-
-interface CategoryData {
-  id: number;
-  categoryName: string;
-}
-
+import { useListOfCategories } from "@/Contexts/ListOfCategoryContext";
+import { CategoryData } from "@/Interfaces/CategoryInterface";
 function ListOfCategories() {
-  const [listOfCategories, setListOfCategories] = useState<CategoryData[]>([]);
-
-  useEffect(() => {
-    getAllCategories();
-  }, []);
-
-  async function getAllCategories() {
-    try {
-      const result = await apis.getALLCategories();
-      setListOfCategories(result.data.categories);
-      console.log(result);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  }
-
+  const { listOfCategories } = useListOfCategories();
   return (
-    <div>
+    <div className="h-[140px] overflow-y-auto flex flex-col">
       {listOfCategories ? (
-        listOfCategories.map((category, index) => (
+        listOfCategories.map((category: CategoryData) => (
           <Category
-            key={index}
+            key={category.id}
             id={category.id}
             categoryName={category.categoryName}
           />

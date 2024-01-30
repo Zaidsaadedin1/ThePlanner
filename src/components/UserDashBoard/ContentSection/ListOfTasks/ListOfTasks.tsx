@@ -2,16 +2,16 @@
 import React from "react";
 import Task from "./Task/Task";
 import { useListOfTasks } from "@/Contexts/ListOfTasksContext";
-import { TaskInterface } from "@/Interfaces/TaskInterface ";
+import { TaskModel } from "@/Interfaces/TaskInterface ";
 
 function ListOfTasks() {
   const { listOfTasks } = useListOfTasks();
-
   return (
-    <div className="flex flex-col w-full justify-start">
-      {listOfTasks.map((task: TaskInterface) => (
-        <Task key={task.id} task={task} />
-      ))}
+    <div className="h-[500px] overflow-y-auto flex flex-col w-full justify-start">
+      {listOfTasks &&
+        listOfTasks.map((task: TaskModel) => (
+          <Task key={task.id} task={task} />
+        ))}
     </div>
   );
 }

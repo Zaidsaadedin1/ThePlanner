@@ -1,10 +1,9 @@
 "use client";
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import ListOfTasks from "./ListOfTasks/ListOfTasks";
-import AddTaskModal from "./AddTaskModal/AddTaskModal";
-import CategoryModal from "../SideNav/CategoryModal/CategoryModal";
+import AddTaskModal from "./ListOfTasks/Task/AddTask/AddTaskModal";
+import AddCategory from "../SideNav/ListOfCategory/Category/AddCategory/AddModal";
 import { useModal } from "../../../Contexts/TaskContextToggle";
 import { useListOfTasks } from "@/Contexts/ListOfTasksContext";
 import { useIsComplete, useMainHeader } from "@/Contexts/FiltrationContext";
@@ -15,22 +14,15 @@ function ContentSection() {
   const { setIsCompleteValue, IsComplete } = useIsComplete();
   const { MainHeader } = useMainHeader();
 
-  const toggleIsCompleteButton = () => {
-    setIsCompleteValue(IsComplete);
-  };
-
   return (
     <>
+      <AddCategory />
       <AddTaskModal />
-      <CategoryModal />
 
       <main className="flex flex-col justify-start items-start p-5 w-full">
         <section className="flex flex-row justify-between items-center p-5 w-full">
           <div className="m-0 p-0">
             <h1 className="font-bold text-3xl ">{MainHeader}</h1>
-            <h4 className="text-s text-gray-500">
-              Complete these tasks as soon as possible.
-            </h4>
           </div>
           <div>
             <Button
@@ -43,17 +35,21 @@ function ContentSection() {
             </Button>
             <Button
               onClick={() => {
-                toggleIsCompleteButton();
+                setIsCompleteValue(!IsComplete);
               }}
-              className="ml-7 text-gray-200 hover:bg-violet-600 active:bg-red-700 focus:outline-none focus:ring focus:ring-gray-300"
+              className={`ml-7 ${
+                IsComplete
+                  ? "bg-red-700 text-white"
+                  : "bg-white text-gray-600 hover:bg-white hover:text-black hover:border-zinc-950 hover:border-2"
+              } active:bg-red-700 focus:outline-none`}
             >
-              Show Completed Tasks
+              {IsComplete ? "Hide Completed Tasks" : "Show Completed Tasks"}
             </Button>
           </div>
         </section>
 
         <section className="w-full">
-          {listOfTasks.length === 0 ? (
+          {listOfTasks && listOfTasks.length === 0 ? (
             <p className="flex justify-center items-center text-6xl mt-40">
               There Is No Tasks Available
             </p>
