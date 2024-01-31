@@ -21,6 +21,7 @@ function MainNav() {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
+    handleSearchSubmit();
   };
 
   const handleSearchSubmit = async () => {
@@ -51,8 +52,7 @@ function MainNav() {
             placeholder="Search tasks..."
             className="rounded h-8 text-gray-500 outline-none "
             value={searchValue}
-            onChange={handleSearchChange}
-            onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
+            onChange={(e) => handleSearchChange(e)}
           />
           <IoIosNotificationsOutline className="text-gray-600 ml-4 mr-4 w-10 size-7" />
           <CiSettings className="text-gray-600 mr-4 w-10 size-7" />

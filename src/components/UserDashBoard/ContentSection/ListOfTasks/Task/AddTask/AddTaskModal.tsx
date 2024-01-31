@@ -45,22 +45,23 @@ function AddTaskModal() {
   const { getTasks } = useListOfTasks();
 
   const { isModalVisible, toggleModal } = useModal();
-  const [name, setName] = useState("");
-  const [nameError, setNameError] = useState("");
+  const [taskName, setTaskName] = useState("");
   const [description, setDescription] = useState("");
-  const [descriptionError, setDescriptionError] = useState("");
   const [StartDate, setStartDate] = useState<Date | undefined>();
   const [DueDate, setDueDate] = useState<Date | undefined>();
   const [priority, setPriority] = useState<string | undefined>();
+  const [isCompleted, setIsCompleted] = useState(false);
+  const { listOfCategories } = useListOfCategories();
+
+  const [nameError, setNameError] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
   const [priorityError, setPriorityError] = useState("");
   const [category, setCategory] = useState<number | undefined>();
   const [categoryError, setCategoryError] = useState("");
-  const [isCompleted, setIsCompleted] = useState(false);
-  const { listOfCategories } = useListOfCategories();
-  useEffect(() => {}, []);
+  const [DateError, setDateError] = useState<string>("");
 
   const resetFields = () => {
-    setName("");
+    setTaskName("");
     setNameError("");
     setDescription("");
     setDescriptionError("");
@@ -74,8 +75,11 @@ function AddTaskModal() {
   };
 
   const addTask = async () => {
-    if (!name) {
+    if (!taskName) {
       setNameError("Task name cannot be empty");
+      return;
+    } else if (taskName.length > 20) {
+      setNameError("Task Name cannot be longer than 20 characters");
       return;
     } else {
       setNameError("");
@@ -83,6 +87,9 @@ function AddTaskModal() {
 
     if (!description) {
       setDescriptionError("Description cannot be empty");
+      return;
+    } else if (description.length > 50) {
+      setDescriptionError("Description cannot be longer than 100 characters");
       return;
     } else {
       setDescriptionError("");
@@ -95,6 +102,13 @@ function AddTaskModal() {
       setPriorityError("");
     }
 
+    if (DueDate && StartDate && DueDate.getTime() < StartDate.getTime()) {
+      setDateError("DueDate should be set after StartDate");
+      return;
+    } else {
+      setDateError("");
+    }
+
     if (!category) {
       setCategoryError("Category cannot be empty");
       return;
@@ -103,7 +117,7 @@ function AddTaskModal() {
     }
 
     const taskData: AddTask = {
-      name,
+      name: taskName,
       description,
       priority: parseInt(priority),
       createdAt: new Date().toISOString(),
@@ -114,9 +128,7 @@ function AddTaskModal() {
     };
 
     try {
-      
       const result = await apis.addTask(taskData);
-
       if (result.status === 200) {
         getTasks();
         toggleModal();
@@ -138,7 +150,13 @@ function AddTaskModal() {
     <>
       <Toaster />
 
-      <Dialog open={isModalVisible} modal={true} onOpenChange={toggleModal}>
+      <Dialog
+        open={isModalVisible}
+        modal={true}
+        onOpenChange={() => {
+          toggleModal;
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <header className="mb-4">
@@ -151,10 +169,10 @@ function AddTaskModal() {
             <Input
               className=" outline-0"
               placeholder="Add Task Name.."
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={taskName}
+              onChange={(e) => setTaskName(e.target.value)}
             />
-            <Label className="text-red-500 mb-3">{nameError}</Label>
+            <Label className="text-red-500  mb-2 mt-2">{nameError}</Label>
 
             <Label className="mb-2">Description</Label>
             <Textarea
@@ -163,7 +181,9 @@ function AddTaskModal() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
-            <Label className="text-red-500 mb-3">{descriptionError}</Label>
+            <Label className="text-red-500  mb-2 mt-2">
+              {descriptionError}
+            </Label>
 
             <div className="mb-4 flex flex-col w-full">
               <Label className="mb-2 w-full">Start At</Label>
@@ -261,6 +281,7 @@ function AddTaskModal() {
                   </div>
                 </PopoverContent>
               </Popover>
+              <Label className="text-red-500  mb-2 mt-2">{DateError}</Label>
             </div>
 
             <div className="mb-4">
@@ -277,7 +298,7 @@ function AddTaskModal() {
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              <Label className="text-red-500 mb-3">{priorityError}</Label>
+              <Label className="text-red-500  mb-2 mt-2">{priorityError}</Label>
             </div>
 
             <div className="mb-4">

@@ -19,7 +19,6 @@ function SignInPage() {
           hasImage: user.hasImage,
           imageUrl: user.imageUrl,
         };
-
         try {
           const result = await apis.addNewUser(newUser);
         } catch (error) {

@@ -40,7 +40,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 function EditTask({ task }: { task: TaskModel }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
-  const [name, setName] = useState("");
+  const [taskName, setTaskName] = useState("");
   const [description, setDescription] = useState("");
   const [StartDate, setStartDate] = useState<Date | undefined>();
   const [DueDate, setDueDate] = useState<Date | undefined>();
@@ -53,13 +53,14 @@ function EditTask({ task }: { task: TaskModel }) {
   const [descriptionError, setDescriptionError] = useState("");
   const [priorityError, setPriorityError] = useState("");
   const [categoryError, setCategoryError] = useState("");
+  const [DateError, setDateError] = useState<string>("");
 
   const { listOfCategories } = useListOfCategories();
   const { getTasks } = useListOfTasks();
 
   const fillEditTaskFields = () => {
     getCategoryName(task.categoryId);
-    setName(task.name);
+    setTaskName(task.name);
     setDescription(task.description || "");
     setStartDate(task.startDate ? new Date(task.startDate) : undefined);
     setDueDate(task.dueDate ? new Date(task.dueDate) : undefined);
@@ -76,9 +77,13 @@ function EditTask({ task }: { task: TaskModel }) {
       console.error("Error fetching category:", error);
     }
   };
+
   const updateTask = async () => {
-    if (!name) {
+    if (!taskName) {
       setNameError("Task name cannot be empty");
+      return;
+    } else if (taskName.length > 20) {
+      setNameError("Task Name cannot be longer than 20 characters");
       return;
     } else {
       setNameError("");
@@ -86,6 +91,9 @@ function EditTask({ task }: { task: TaskModel }) {
 
     if (!description) {
       setDescriptionError("Description cannot be empty");
+      return;
+    } else if (description.length > 50) {
+      setDescriptionError("Description cannot be longer than 100 characters");
       return;
     } else {
       setDescriptionError("");
@@ -98,6 +106,13 @@ function EditTask({ task }: { task: TaskModel }) {
       setPriorityError("");
     }
 
+    if (DueDate && StartDate && DueDate.getTime() < StartDate.getTime()) {
+      setDateError("DueDate should be set after StartDate");
+      return;
+    } else {
+      setDateError("");
+    }
+
     if (!categoryName) {
       setCategoryError("Category cannot be empty");
       return;
@@ -106,7 +121,7 @@ function EditTask({ task }: { task: TaskModel }) {
     }
 
     const updateAssignment: UpdateTask = {
-      name,
+      name: taskName,
       description,
       priority: parseInt(priority),
       startDate: StartDate?.toISOString(),
@@ -126,10 +141,6 @@ function EditTask({ task }: { task: TaskModel }) {
         });
       }
     } catch (error) {
-      console.log("====================================");
-      console.log(categoryID);
-      console.log(error);
-      console.log("====================================");
       toast({
         title: "Task Cant Be Updated ",
         description: "Task Cant Be Updated Something Wrong Happened",
@@ -159,10 +170,10 @@ function EditTask({ task }: { task: TaskModel }) {
             <Input
               className=" outline-0"
               placeholder="Add Task Name.."
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={taskName}
+              onChange={(e) => setTaskName(e.target.value)}
             />
-            <Label className="text-red-500 mb-3">{nameError}</Label>
+            <Label className="text-red-500 mb-2 mt-2">{nameError}</Label>
 
             <Label className="mb-2">Description</Label>
             <Textarea
@@ -171,7 +182,7 @@ function EditTask({ task }: { task: TaskModel }) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
-            <Label className="text-red-500 mb-3">{descriptionError}</Label>
+            <Label className="text-red-500 mb-2 mt-2">{descriptionError}</Label>
 
             <div className="mb-4 flex flex-col w-full">
               <Label className="mb-2 w-full">Start At</Label>
@@ -269,6 +280,7 @@ function EditTask({ task }: { task: TaskModel }) {
                   </div>
                 </PopoverContent>
               </Popover>
+              <Label className="text-red-500 mb-2 mt-2">{DateError}</Label>
             </div>
 
             <div className="mb-4">
@@ -288,7 +300,7 @@ function EditTask({ task }: { task: TaskModel }) {
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              <Label className="text-red-500 mb-3">{priorityError}</Label>
+              <Label className="text-red-500 mb-2 mt-2">{priorityError}</Label>
             </div>
 
             <div className="mb-4">
@@ -320,7 +332,7 @@ function EditTask({ task }: { task: TaskModel }) {
                     ))}
                 </SelectContent>
               </Select>
-              <Label className="text-red-500 mb-3">{categoryError}</Label>
+              <Label className="text-red-500 mb-2 mt-2">{categoryError}</Label>
             </div>
 
             <div className="flex items-center space-x-2">
