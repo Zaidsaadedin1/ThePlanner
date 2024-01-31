@@ -107,7 +107,7 @@ function SideNav() {
               </div>
 
               <div>
-                <section className="mb-4">
+                <section className="mb-2">
                   <h1 className="text-xl font-bold text-black mb-3">
                     Categories
                   </h1>
@@ -119,7 +119,7 @@ function SideNav() {
                 <div className=" flex justify-start  items-start flex-col">
                   <Button
                     onClick={handleButtonClick}
-                    className="  flex flex-row justify-start hover:bg-white hover:text-black-950 hover:border-black hover:border-2  items-center mb-1  text-black   mt-6 bg-white "
+                    className="  flex flex-row border-2 justify-start hover:bg-white hover:text-black-950 hover:border-black hover:border-2  items-center mb-1  text-black   mt-6 bg-white "
                   >
                     <FaPlus className=" mr-2" />
                     Add Category
@@ -128,7 +128,7 @@ function SideNav() {
               </div>
             </section>
 
-            <footer className="mt-7 ">
+            <footer className="mt-10 ">
               <div className="flex flex-row justify-center items-center mb-2 border text-black  font-bold w-52">
                 <section className="flex flex-row justify-between items-center  text-black p-1">
                   <div className="m-2">
@@ -139,7 +139,7 @@ function SideNav() {
                   </div>
                   <div className="m-2">
                     <h2>{user?.username}</h2>
-                    <h2 className="text-gray-400">Role</h2>
+                    <h2 className="text-gray-400">Admin</h2>
                   </div>
                   <div className="m-2">
                     <button onClick={() => router.push("/home")}>

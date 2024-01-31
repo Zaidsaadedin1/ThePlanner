@@ -6,7 +6,7 @@ import { CategoryData } from "@/Interfaces/CategoryInterface";
 function ListOfCategories() {
   const { listOfCategories } = useListOfCategories();
   return (
-    <div className="h-[140px] overflow-y-auto flex flex-col">
+    <div className="h-[120px] overflow-y-auto flex flex-col">
       {listOfCategories ? (
         listOfCategories.map((category: CategoryData) => (
           <Category
