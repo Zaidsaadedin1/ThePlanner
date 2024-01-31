@@ -14,6 +14,7 @@ import { useListOfCategories } from "@/Contexts/ListOfCategoryContext";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { TaskModel } from "@/Interfaces/TaskInterface ";
 
 function DeleteCategoryComponent({ id }: { id: number }) {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
@@ -24,21 +25,26 @@ function DeleteCategoryComponent({ id }: { id: number }) {
   const { setListOfCategoriesValues } = useListOfCategories();
 
   const deleteCategory = async (categoryId: number) => {
-    try {
-      const result = await apis.deleteCategory(categoryId);
-      if (result.status === 200) {
-        toast({
-          title: "Category Deleted Successfully",
-          description: "Your New Category Has Been Deleted.",
-        });
-        toggleModal();
-        setListOfCategoriesValues();
-      }
-    } catch (error) {
+    const allTasks = await apis.getAllTasks();
+    const tasksInCategory = allTasks.data.assignments.filter(
+      (task: TaskModel) => task.categoryId === categoryId
+    );
+
+    if (tasksInCategory.length > 0) {
       toast({
-        title: "Category Not Found",
-        description: "There Is No Category With This Name",
+        title: "Cannot Delete Category",
+        description:
+          "There are tasks associated with this category. Please remove them first.",
       });
+      return;
+    } else {
+      const result = await apis.deleteCategory(categoryId);
+      toast({
+        title: "Category Deleted Successfully",
+        description: "Your Category Has Been Deleted.",
+      });
+      toggleModal();
+      setListOfCategoriesValues();
     }
   };
 

@@ -114,6 +114,7 @@ function AddTaskModal() {
     };
 
     try {
+      
       const result = await apis.addTask(taskData);
 
       if (result.status === 200) {

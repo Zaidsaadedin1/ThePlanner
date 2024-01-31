@@ -47,6 +47,7 @@ function EditTask({ task }: { task: TaskModel }) {
   const [priority, setPriority] = useState<string | undefined>();
   const [categoryName, setCategoryName] = useState<string>();
   const [isCompleted, setIsCompleted] = useState(false);
+  const [categoryID, setCategoryId] = useState<number>(task.categoryId);
 
   const [nameError, setNameError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
@@ -104,29 +105,31 @@ function EditTask({ task }: { task: TaskModel }) {
       setCategoryError("");
     }
 
-    const updatedTaskData: UpdateTask = {
+    const updateAssignment: UpdateTask = {
       name,
       description,
       priority: parseInt(priority),
       startDate: StartDate?.toISOString(),
       dueDate: DueDate?.toISOString(),
       isCompleted,
-      categoryId: task.categoryId,
+      categoryId: categoryID,
     };
 
     try {
-      const result = await apis.updateTask(updatedTaskData, task.id);
-      console.log(result);
-
+      const result = await apis.updateTask(updateAssignment, task.id);
+      setIsDrawerOpen(!isDrawerOpen);
+      getTasks();
       if (result.status === 200) {
-        setIsDrawerOpen(!isDrawerOpen);
-        getTasks();
         toast({
           title: "Task Updated Successfully",
           description: "Your New Task Has Been Updated.",
         });
       }
     } catch (error) {
+      console.log("====================================");
+      console.log(categoryID);
+      console.log(error);
+      console.log("====================================");
       toast({
         title: "Task Cant Be Updated ",
         description: "Task Cant Be Updated Something Wrong Happened",
@@ -297,6 +300,7 @@ function EditTask({ task }: { task: TaskModel }) {
                   );
                   if (selectedCategory) {
                     setCategoryName(selectedCategory.categoryName);
+                    setCategoryId(selectedCategory.id);
                   } else {
                     setCategoryName(undefined);
                   }

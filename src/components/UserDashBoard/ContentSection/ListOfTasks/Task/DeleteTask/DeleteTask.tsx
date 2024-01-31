@@ -25,9 +25,9 @@ function DeleteTask({ id }: { id: number }) {
   const deleteTask = async (id: number) => {
     try {
       const result = await apis.deleteTask(id);
+      getTasks();
+      toggleModal();
       if (result.status === 200) {
-        toggleModal();
-        getTasks();
         toast({
           title: "Task Deleted Successfully",
           description: "Your Task Has Been Deleted.",

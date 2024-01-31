@@ -17,8 +17,11 @@ export const apis = {
     const result = await axios.post(`${baseUrl}/AddAssignment`, task);
     return result;
   },
-  updateTask: async (task: UpdateTask, id: number) => {
-    const result = await axios.put(`${baseUrl}/Assignment?id=${id}`, task)
+  updateTask: async (updateAssignment: UpdateTask, categoryId: number) => {
+  
+    const result = await axios.put(`${baseUrl}/Assignment`, updateAssignment,{
+      params :{categoryId :categoryId}
+    })
     return result;
   },
   filterTask: async (filteredTasks: FilteredTasks) =>{

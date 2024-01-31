@@ -46,9 +46,9 @@ function Task({ task }: { task: TaskModel }) {
   const assignUsersToAssignment = async () => {
     try {
       const result = await apis.assignAssignment(selectedUsers, task.id);
+      getAssignedUsers();
+      toggleModal();
       if (result.status === 200) {
-        getAssignedUsers();
-        toggleModal();
         toast({
           title: "Success Assigning Users",
           description: "Success Assigning Users To Task.",
@@ -124,8 +124,8 @@ function Task({ task }: { task: TaskModel }) {
                 <div className="flex flex-row justify-center items-center ">
                   <div className="flex flex-row items-center mr-4">
                     {assignedUsers.length > 0 ? (
-                      assignedUsers.map((user: AssignedUser) => (
-                        <Avatar key={user.UserId} className="mr-3 mt-3 size-7 ">
+                      assignedUsers.map((user: AssignedUser, index) => (
+                        <Avatar key={index} className="mr-3 mt-3 size-7 ">
                           <AvatarImage key={user.UserId} src={user.imageUrl} />
                         </Avatar>
                       ))
