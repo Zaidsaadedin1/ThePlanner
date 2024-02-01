@@ -38,7 +38,7 @@ export interface TaskModel {
   
   export interface FilteredTasks {
     Priority: number | null;
-    Name: string | null;
+    CategoryId: number | null;
     IsComplete: boolean | null;
   }
 

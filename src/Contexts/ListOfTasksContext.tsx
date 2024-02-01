@@ -1,17 +1,9 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from "react";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 import { TaskModel } from "@/Interfaces/TaskInterface ";
-import { apis } from "@/Apis";
 
 interface ListOfTasksContextProps {
   listOfTasks: TaskModel[];
   setListOfTasksValues: (list: TaskModel[]) => void;
-  getTasks: () => Promise<void>;
 }
 
 const listOfTasksContext = createContext<ListOfTasksContextProps | undefined>(
@@ -31,23 +23,8 @@ export const ListOfTasksProvider: React.FC<ListOfTasksProviderProps> = ({
     setListOfTasks(list);
   };
 
-  const getTasks = async () => {
-    try {
-      const result = await apis.getAllTasks();
-      setListOfTasks(result.data.assignments);
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    }
-  };
-
-  useEffect(() => {
-    getTasks();
-  }, []);
-
   return (
-    <listOfTasksContext.Provider
-      value={{ listOfTasks, setListOfTasksValues, getTasks }}
-    >
+    <listOfTasksContext.Provider value={{ listOfTasks, setListOfTasksValues }}>
       {children}
     </listOfTasksContext.Provider>
   );

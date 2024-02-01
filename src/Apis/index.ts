@@ -46,10 +46,18 @@ export const apis = {
     const data = result.data;
     return data;
   },
-  searchTasks: async (value: TaskSearchValue) =>{
-    const result = await axios.post(`${baseUrl}/Assignments/Search`, value);
-    const searchData = result.data; 
-    return searchData;
+  searchTasks: async (searchValue: string) =>{
+    const result = await axios.post(
+      `${baseUrl}/Assignments/Search`,
+      `"${searchValue}"`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+      
+    )
+    return result;
   },
   addNewUser: async (user:User) =>{
     const result = await axios.post(`${baseUrl}/Users`, user);

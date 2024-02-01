@@ -35,9 +35,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Popover } from "@radix-ui/react-popover";
 import { useListOfCategories } from "@/Contexts/ListOfCategoryContext";
-import { useListOfTasks } from "@/Contexts/ListOfTasksContext";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { useResetFilters } from "@/Contexts/FiltrationContext";
+
 function EditTask({ task }: { task: TaskModel }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [taskName, setTaskName] = useState("");
@@ -48,6 +49,7 @@ function EditTask({ task }: { task: TaskModel }) {
   const [categoryName, setCategoryName] = useState<string>();
   const [isCompleted, setIsCompleted] = useState(false);
   const [categoryID, setCategoryId] = useState<number>(task.categoryId);
+  const [assignments, setAssignments] = useState<TaskModel[]>([]);
 
   const [nameError, setNameError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
@@ -56,10 +58,22 @@ function EditTask({ task }: { task: TaskModel }) {
   const [DateError, setDateError] = useState<string>("");
 
   const { listOfCategories } = useListOfCategories();
-  const { getTasks } = useListOfTasks();
+  const initialFiltration = useResetFilters();
+
+  useEffect(() => {
+    const getCategoryName = async (categoryID: number) => {
+      try {
+        const categoryResult = await apis.getCategory(categoryID);
+        const result = categoryResult.categoryName;
+        setCategoryName(result);
+      } catch (error) {
+        console.error("Error fetching category:", error);
+      }
+    };
+    getCategoryName(task.categoryId);
+  }, []);
 
   const fillEditTaskFields = () => {
-    getCategoryName(task.categoryId);
     setTaskName(task.name);
     setDescription(task.description || "");
     setStartDate(task.startDate ? new Date(task.startDate) : undefined);
@@ -67,18 +81,33 @@ function EditTask({ task }: { task: TaskModel }) {
     setPriority(task.priority.toString());
     setIsCompleted(task.isCompleted);
   };
-
-  const getCategoryName = async (categoryId: number) => {
+  const checkForTasksName = async () => {
     try {
-      const categoryResult = await apis.getCategory(categoryId);
-      const result = categoryResult.categoryName;
-      setCategoryName(result);
+      const result = await apis.getAllTasks();
+      const assignments = result.data.assignments;
+
+      const duplicateTask = assignments.find(
+        (assignment: TaskModel) => assignment.name === taskName
+      );
+
+      if (duplicateTask) {
+        toast({
+          title: "Task Can't be Updated",
+          description: "There is already a task with this name.",
+        });
+        return true;
+      }
     } catch (error) {
-      console.error("Error fetching category:", error);
+      console.error("Error checking for task name:", error);
     }
+
+    return false;
   };
 
   const updateTask = async () => {
+    if (await checkForTasksName()) {
+      return;
+    }
     if (!taskName) {
       setNameError("Task name cannot be empty");
       return;
@@ -133,7 +162,7 @@ function EditTask({ task }: { task: TaskModel }) {
     try {
       const result = await apis.updateTask(updateAssignment, task.id);
       setIsDrawerOpen(!isDrawerOpen);
-      getTasks();
+      initialFiltration();
       if (result.status === 200) {
         toast({
           title: "Task Updated Successfully",
@@ -313,8 +342,6 @@ function EditTask({ task }: { task: TaskModel }) {
                   if (selectedCategory) {
                     setCategoryName(selectedCategory.categoryName);
                     setCategoryId(selectedCategory.id);
-                  } else {
-                    setCategoryName(undefined);
                   }
                 }}
               >

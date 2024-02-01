@@ -1,4 +1,3 @@
-"use client";
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { MdOutlineMenu } from "react-icons/md";
@@ -10,9 +9,9 @@ import { useListOfTasks } from "@/Contexts/ListOfTasksContext";
 import { useMainHeader } from "@/Contexts/FiltrationContext";
 
 function MainNav() {
-  const { sideMenuToggle, isSideMenuVisible } = useSideMenuModal();
+  const { sideMenuToggle } = useSideMenuModal();
   const { setListOfTasksValues } = useListOfTasks();
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState<string>("");
   const { setMainHeaderValue } = useMainHeader();
 
   const handleButtonClick = () => {
@@ -21,18 +20,21 @@ function MainNav() {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
-    handleSearchSubmit();
   };
 
-  const handleSearchSubmit = async () => {
-    try {
-      setMainHeaderValue("Search Result");
-      const result = await apis.searchTasks({ Value: searchValue });
-      setListOfTasksValues(result);
-    } catch (error) {
-      console.error("Error searching tasks:", error);
-    }
-  };
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        setMainHeaderValue("Search Result");
+        const result = await apis.searchTasks(searchValue);
+        setListOfTasksValues(result.data);
+      } catch (error) {
+        console.error("Error searching tasks:", error);
+      }
+    };
+
+    fetchTasks();
+  }, [searchValue]);
 
   return (
     <>
@@ -52,7 +54,7 @@ function MainNav() {
             placeholder="Search tasks..."
             className="rounded h-8 text-gray-500 outline-none "
             value={searchValue}
-            onChange={(e) => handleSearchChange(e)}
+            onChange={handleSearchChange}
           />
           <IoIosNotificationsOutline className="text-gray-600 ml-4 mr-4 w-10 size-7" />
           <CiSettings className="text-gray-600 mr-4 w-10 size-7" />

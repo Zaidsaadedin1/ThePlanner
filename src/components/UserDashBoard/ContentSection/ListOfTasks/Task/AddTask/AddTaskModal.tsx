@@ -36,13 +36,13 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { apis } from "@/Apis";
 import { AddTask } from "@/Interfaces/TaskInterface ";
-import { useListOfTasks } from "@/Contexts/ListOfTasksContext";
 import { useListOfCategories } from "@/Contexts/ListOfCategoryContext";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { useResetFilters } from "@/Contexts/FiltrationContext";
 
 function AddTaskModal() {
-  const { getTasks } = useListOfTasks();
+  const initialFiltration = useResetFilters();
 
   const { isModalVisible, toggleModal } = useModal();
   const [taskName, setTaskName] = useState("");
@@ -130,7 +130,7 @@ function AddTaskModal() {
     try {
       const result = await apis.addTask(taskData);
       if (result.status === 200) {
-        getTasks();
+        initialFiltration();
         toggleModal();
         resetFields();
         toast({
@@ -141,7 +141,7 @@ function AddTaskModal() {
     } catch (error) {
       toast({
         title: "Task Cant Be Added ",
-        description: "Task Cant Be Added Something Wrong Happened",
+        description: "Task With This Name Already Exists",
       });
     }
   };
@@ -150,13 +150,7 @@ function AddTaskModal() {
     <>
       <Toaster />
 
-      <Dialog
-        open={isModalVisible}
-        modal={true}
-        onOpenChange={() => {
-          toggleModal;
-        }}
-      >
+      <Dialog open={isModalVisible} modal={true} onOpenChange={toggleModal}>
         <DialogContent>
           <DialogHeader>
             <header className="mb-4">

@@ -14,10 +14,11 @@ import { useListOfTasks } from "@/Contexts/ListOfTasksContext";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { useResetFilters } from "@/Contexts/FiltrationContext";
 
 function DeleteTask({ id }: { id: number }) {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const { getTasks } = useListOfTasks();
+  const initialFiltration = useResetFilters();
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
@@ -25,7 +26,7 @@ function DeleteTask({ id }: { id: number }) {
   const deleteTask = async (id: number) => {
     try {
       const result = await apis.deleteTask(id);
-      getTasks();
+      initialFiltration();
       toggleModal();
       if (result.status === 200) {
         toast({

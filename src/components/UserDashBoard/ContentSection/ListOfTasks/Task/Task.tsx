@@ -212,6 +212,12 @@ function Task({ task }: { task: TaskModel }) {
                                     onClick={() => {
                                       assignUsersToAssignment();
                                     }}
+                                    style={{
+                                      display:
+                                        selectedUsers.length > 0
+                                          ? "block"
+                                          : "none",
+                                    }}
                                   >
                                     Assign
                                   </Button>

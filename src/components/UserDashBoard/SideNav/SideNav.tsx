@@ -12,18 +12,16 @@ import {
 import { useListOfCategories } from "@/Contexts/ListOfCategoryContext";
 import { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import DeleteCategory from "./ListOfCategory/Category/DeleteCategory/DeleteCategory";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SiTask } from "react-icons/si";
-import { useListOfTasks } from "@/Contexts/ListOfTasksContext";
 import { useRouter } from "next/navigation";
 import { MdOutlineLogout } from "react-icons/md";
 
 function SideNav() {
-  const { getTasks } = useListOfTasks();
+  const { initialFiltration }: any = useResetFilters();
   const { user } = useUser();
-  const { toggleModal, isModalVisible } = useModal();
+  const { toggleModal } = useModal();
   const { isSideMenuVisible } = useSideMenuModal();
   const { setPriorityValue } = usePriority();
   const { setListOfCategoriesValues } = useListOfCategories();
@@ -38,7 +36,7 @@ function SideNav() {
 
   useEffect(() => {
     setListOfCategoriesValues();
-  });
+  }, []);
 
   const handleButtonClick = () => {
     toggleModal();
@@ -55,7 +53,7 @@ function SideNav() {
               <div>
                 <button
                   onClick={() => {
-                    getTasks();
+                    initialFiltration;
                     setMainHeaderValue("All Tasks");
                     resetFilters();
                   }}
