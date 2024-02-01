@@ -17,10 +17,10 @@ export const apis = {
     const result = await axios.post(`${baseUrl}/AddAssignment`, task);
     return result;
   },
-  updateTask: async (updateAssignment: UpdateTask, categoryId: number) => {
+  updateTask: async (updateAssignment: UpdateTask, assignmentId: number) => {
   
     const result = await axios.put(`${baseUrl}/Assignment`, updateAssignment,{
-      params :{categoryId :categoryId}
+      params :{assignmentId :assignmentId}
     })
     return result;
   },

@@ -105,6 +105,20 @@ function EditTask({ task }: { task: TaskModel }) {
     return false;
   };
 
+  const isTaskDataChanged = () => {
+    if (
+      taskName == task.name &&
+      description == task.description &&
+      priority == task.priority.toString() &&
+      categoryID == task.categoryId &&
+      StartDate == task.startDate &&
+      DueDate == task.dueDate &&
+      isCompleted == task.isCompleted
+    ) {
+      return true;
+    }
+    return false;
+  };
   const updateTask = async () => {
     if (!taskName) {
       setNameError("Task name cannot be empty");
@@ -149,6 +163,7 @@ function EditTask({ task }: { task: TaskModel }) {
     if (await checkForTasksName()) {
       return;
     }
+
     const updateAssignment: UpdateTask = {
       name: taskName,
       description,
@@ -372,14 +387,16 @@ function EditTask({ task }: { task: TaskModel }) {
             </div>
           </div>
           <DialogFooter>
-            <Button
-              onClick={() => {
-                updateTask();
-              }}
-              variant="outline"
-            >
-              Save Changes
-            </Button>
+            {!isTaskDataChanged() && (
+              <Button
+                onClick={() => {
+                  updateTask();
+                }}
+                variant="outline"
+              >
+                Save Changes
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
