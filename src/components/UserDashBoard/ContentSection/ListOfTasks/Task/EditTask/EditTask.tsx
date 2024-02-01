@@ -88,8 +88,7 @@ function EditTask({ task }: { task: TaskModel }) {
 
       const duplicateTask = assignments.find(
         (assignment: TaskModel) =>
-          assignment.name === taskName &&
-          assignment.id != task.id &&
+          assignment.name === taskName && assignment.id != task.id
       );
 
       if (duplicateTask) {
@@ -159,7 +158,7 @@ function EditTask({ task }: { task: TaskModel }) {
       isCompleted,
       categoryId: categoryID,
     };
-   
+
     try {
       const result = await apis.updateTask(updateAssignment, task.id);
       setIsDrawerOpen(!isDrawerOpen);
