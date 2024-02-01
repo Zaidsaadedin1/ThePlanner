@@ -105,6 +105,9 @@ function AddTaskModal() {
     if (DueDate && StartDate && DueDate.getTime() < StartDate.getTime()) {
       setDateError("DueDate should be set after StartDate");
       return;
+    } else if (StartDate === undefined) {
+      setDateError("Due date has time but start date doesn't.");
+      return;
     } else {
       setDateError("");
     }
