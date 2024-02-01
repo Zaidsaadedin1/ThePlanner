@@ -87,7 +87,9 @@ function EditTask({ task }: { task: TaskModel }) {
       const assignments = result.data.assignments;
 
       const duplicateTask = assignments.find(
-        (assignment: TaskModel) => assignment.name === taskName
+        (assignment: TaskModel) =>
+          assignment.name === taskName &&
+          assignment.id != task.id &&
       );
 
       if (duplicateTask) {
@@ -105,9 +107,6 @@ function EditTask({ task }: { task: TaskModel }) {
   };
 
   const updateTask = async () => {
-    if (await checkForTasksName()) {
-      return;
-    }
     if (!taskName) {
       setNameError("Task name cannot be empty");
       return;
@@ -148,7 +147,9 @@ function EditTask({ task }: { task: TaskModel }) {
     } else {
       setCategoryError("");
     }
-
+    if (await checkForTasksName()) {
+      return;
+    }
     const updateAssignment: UpdateTask = {
       name: taskName,
       description,
@@ -158,7 +159,7 @@ function EditTask({ task }: { task: TaskModel }) {
       isCompleted,
       categoryId: categoryID,
     };
-
+   
     try {
       const result = await apis.updateTask(updateAssignment, task.id);
       setIsDrawerOpen(!isDrawerOpen);
